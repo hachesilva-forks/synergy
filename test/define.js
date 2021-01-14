@@ -223,21 +223,21 @@ describe('define', () => {
   });
 
   it('should accept rich data as properties', () => {
-    let factory = ({ letters = [], obj = {} }) => ({
-      letters,
+    let factory = ({ arr = [], obj = {} }) => ({
+      arr,
       obj,
     });
 
     let template = `
     <h2>{{ obj.org }}</h2>  
     <h3>{{ obj.repo }}</h3>
-      <template each="letter in letters">
-        <p>{{ letter }}</p>
+      <template each="item in arr">
+        <p>{{ item }}</p>
       </template>
     `;
 
     synergy.define('rich-props', factory, template, {
-      observedAttributes: ['letters', 'obj'],
+      observedAttributes: ['arr', 'obj'],
     });
 
     mount(html` <div id="container"></div> `);
@@ -253,7 +253,7 @@ describe('define', () => {
       },
       html`
         <rich-props
-          letters="{{ letters }}"
+          arr="{{ letters }}"
           obj="{{ library }}"
         ></rich-props>
       `
