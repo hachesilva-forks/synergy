@@ -4,9 +4,7 @@ describe('attributes', () => {
     rootNode = mount(html`<div id="container"></div>`);
   });
 
-  xit('should always cast primitive values to strings, unless null or undefined', () => {
-    //@TODO: review this test ... its dependent on formatting
-
+  it('should always cast primitive values to strings, unless null or undefined', () => {
     view = synergy.render(
       rootNode,
       {
@@ -24,10 +22,6 @@ describe('attributes', () => {
           <li id="null">{{ null }}</li>
           <li id="number">{{ number }}</li>
           <li id="string">{{ string }}</li>
-          <li id="mixed">
-            {{ boolean }} + {{ undefined }} + {{ number }} +
-            {{ string }} + {{ null }}
-          </li>
         </ul>
       `
     );
@@ -37,10 +31,6 @@ describe('attributes', () => {
     assert.equal($('#null').textContent, '');
     assert.equal($('#number').textContent, '0');
     assert.equal($('#string').textContent, 'string');
-    assert.equal(
-      $('#mixed').textContent,
-      'false +  + 0 + string + '
-    );
   });
 
   it('should support multiple bindings', () => {
