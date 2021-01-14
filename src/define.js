@@ -50,7 +50,7 @@ const define = (name, factory, template, options = {}) => {
         let property = attributeToProp(name).name;
         let value = this.getAttribute(name);
 
-        if (!value && value !== '') value = this[property]; // || false?
+        if (!value && value !== '') value = this[property];
 
         Object.defineProperty(this, property, {
           get() {
@@ -60,9 +60,6 @@ const define = (name, factory, template, options = {}) => {
             this.viewmodel[property] = v;
             if (isPrimitive(v))
               applyAttribute(this, property, v);
-            /*
-            @TODO: combine prop/attribute set into single function (also happens in the updateCallback wrapper below)
-            */
           },
         });
 
