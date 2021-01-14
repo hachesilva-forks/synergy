@@ -48,9 +48,6 @@ const define = (name, factory, template, options = {}) => {
 
       observedAttributes.forEach((name) => {
         let property = attributeToProp(name).name;
-
-        //@TODO
-
         let value = this.getAttribute(name);
 
         if (!value && value !== '') value = this[property]; // || false?
