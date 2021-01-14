@@ -222,41 +222,42 @@ describe('define', () => {
     assert.equal(node.shadowRoot.innerHTML, template);
   });
 
-  xit('should accept rich data as properties', () => {
-    let factory = () => {
-      return {
-        bool: true,
-        num: 7,
-        str: 'synergy',
-        array: 'synergy'.split(''),
-        obj: {
+  it('should accept rich data as properties', () => {
+    let factory = ({ arr = [], obj = {} }) => ({
+      arr,
+      obj,
+    });
+
+    let template = `
+    <h2>{{ obj.org }}</h2>  
+    <h3>{{ obj.repo }}</h3>
+      <template each="letter in arr">
+        <p>{{ letter }}</p>
+      </template>
+    `;
+
+    synergy.define('rich-props', factory, template, {
+      observedAttributes: ['array', 'obj'],
+    });
+
+    mount(html` <div id="container"></div> `);
+
+    synergy.render(
+      document.getElementById('container'),
+      {
+        items: 'synergy'.split(''),
+        library: {
           org: 'synergyjs',
           repo: 'defx/synergy',
         },
-      };
-    };
-
-    let template = `
-      <div id="bool">{{ bool }}</div>
-    `;
-
-    /*
-    
-    first thoughts...
-    
-    - make observed attributes getters on the class
-    - check props when initialising
-
-
-
-
-    dont really care if this gets used for primitives too.
-    
-    */
-
-    define('rich-props', factory, template, {
-      observedAttributes: ['array', 'obj'],
-    });
+      },
+      html`
+        <rich-props
+          arr="{{ items }}"
+          obj="{{ library }}"
+        ></rich-props>
+      `
+    );
   });
 
   // it('should pass rich data as properties', () => {

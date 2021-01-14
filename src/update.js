@@ -14,6 +14,8 @@ import {
   pascalToKebab,
   applyAttribute,
   attributeToProp,
+  isPrimitive,
+  kebabToPascal,
 } from './helpers.js';
 import cloneNode from './cloneNode.js';
 import compareKeyedLists from './compareKeyedLists.js';
@@ -127,27 +129,45 @@ const applyComplexAttribute = (
   previous
 ) => {
   let v = value;
-  if (rawName === 'style') {
-    v = joinStyles(
-      mergeStyles(
-        parseStyles(previous),
-        parseStyles(node.getAttribute('style')),
-        parseStyles(value)
-      )
-    );
-  } else {
-    switch (typeOf(value)) {
-      case 'Array':
-        v = value.join(' ');
-        break;
-      case 'Object':
-        v = Object.keys(value)
-          .reduce((a, k) => {
-            if (value[k]) a.push(k);
-            return a;
-          }, [])
-          .join(' ');
-        break;
+
+  switch (rawName) {
+    case 'style': {
+      v = joinStyles(
+        mergeStyles(
+          parseStyles(previous),
+          parseStyles(node.getAttribute('style')),
+          parseStyles(value)
+        )
+      );
+      break;
+    }
+    case 'class': {
+      switch (typeOf(value)) {
+        case 'Array':
+          v = value.join(' ');
+          break;
+        case 'Object':
+          v = Object.keys(value)
+            .reduce((a, k) => {
+              if (value[k]) a.push(k);
+              return a;
+            }, [])
+            .join(' ');
+          break;
+      }
+      break;
+    }
+    default: {
+      if (!isPrimitive(value)) {
+        console.log(
+          'UPDATE::L163',
+          kebabToPascal(rawName),
+          value,
+          node
+        );
+        node[kebabToPascal(rawName)] = value;
+        return;
+      }
     }
   }
 

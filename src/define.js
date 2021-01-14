@@ -4,6 +4,7 @@ import {
   templateFromString,
   applyAttribute,
   attributeToProp,
+  isPrimitive,
 } from './helpers.js';
 
 const initialAttributes = (node) => {
@@ -20,9 +21,6 @@ const forwards = [
   'disconnectedCallback',
   'adoptedCallback',
 ];
-
-const isPrimitive = (v) =>
-  v === null || typeof v !== 'object';
 
 const define = (name, factory, template, options = {}) => {
   let { observedAttributes = [] } = options;
@@ -43,75 +41,78 @@ const define = (name, factory, template, options = {}) => {
     constructor() {
       super();
 
-      let viewmodel = factory(
+      this.viewmodel = factory(
         initialAttributes(this),
         this
       );
 
-      // observedAttributes.forEach((name) => {
-      //   let property = attributeToProp(name).name;
+      observedAttributes.forEach((name) => {
+        let property = attributeToProp(name).name;
 
-      //   let value =
-      //     this.getAttribute(name) || this[property]; // || false?
+        let value =
+          this.getAttribute(name) || this[property]; // || false?
 
-      //   Object.defineProperty(this, property, {
-      //     get: (k) => {
-      //       return this.viewmodel[k];
-      //     },
-      //     set: (k, v) => {
-      //       console.log('?', this.viewmodel);
-      //       this.viewmodel[k] = v;
-      //       if (isPrimitive(v)) applyAttribute(this, k, v);
-      //       /*
-      //       @TODO: combine prop/attribute set into single function (also happens in the updateCallback wrapper below)
-      //       */
-      //     },
-      //   });
+        Object.defineProperty(this, property, {
+          get: () => {
+            return this.viewmodel[property];
+          },
+          set: (v) => {
+            this.viewmodel[property] = v;
+            if (isPrimitive(v))
+              applyAttribute(this, property, v);
+            /*
+            @TODO: combine prop/attribute set into single function (also happens in the updateCallback wrapper below)
+            */
+          },
+        });
 
-      //   this[property] = value;
-      // });
+        this[property] = value;
+      });
 
       if (options.shadowRoot) {
         this.attachShadow({
           mode: options.shadowRoot,
         });
       } else {
-        viewmodel.beforeMountCallback = (frag) =>
+        this.viewmodel.beforeMountCallback = (frag) =>
           mergeSlots(this, frag);
       }
 
       this.viewmodel = synergy.render(
         this.shadowRoot || this,
-        viewmodel,
+        this.viewmodel,
         template
       );
 
-      let puc = viewmodel.updatedCallback || function () {};
+      let puc =
+        this.viewmodel.updatedCallback || function () {};
 
-      viewmodel.updatedCallback = (prev) => {
+      this.viewmodel.updatedCallback = (prev) => {
+        console.log('updatedCallback');
         observedProps
-          .map((k) => [k, prev[k], viewmodel[k]])
+          .map((k) => {
+            return [k, prev[k], this.viewmodel[k]];
+          })
           .filter(([_, a, b]) => a !== b)
-          .forEach(([k, _, v]) =>
-            applyAttribute(this, k, v)
-          );
+          .filter(([, , b]) => isPrimitive(b))
+          .forEach(([k, _, v]) => {
+            applyAttribute(this, k, v);
+          });
 
         puc.call(this.viewmodel, prev);
       };
     }
     attributeChangedCallback(k, _, v) {
-      if (this.viewmodel) {
-        let { name, value } = attributeToProp(k, v);
-        this.viewmodel[name] = value;
-      }
+      console.log('attributeChangedCallback');
+      let { name, value } = attributeToProp(k, v);
+      this.viewmodel[name] = value;
     }
   };
 
   forwards.forEach((k) =>
     Object.assign(X.prototype, {
       [k]() {
-        if (this.viewmodel && this.viewmodel[k])
-          this.viewmodel[k]();
+        if (this.viewmodel[k]) this.viewmodel[k]();
       },
     })
   );
