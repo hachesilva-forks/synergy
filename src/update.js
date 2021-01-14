@@ -128,37 +128,30 @@ const applyComplexAttribute = (
   value,
   previous
 ) => {
-  switch (name) {
-    case 'style': {
-      value = joinStyles(
-        mergeStyles(
-          parseStyles(previous),
-          parseStyles(node.getAttribute('style')),
-          parseStyles(value)
-        )
-      );
-      break;
+  if (name === 'style') {
+    value = joinStyles(
+      mergeStyles(
+        parseStyles(previous),
+        parseStyles(node.getAttribute('style')),
+        parseStyles(value)
+      )
+    );
+  } else if (name === 'class') {
+    switch (typeOf(value)) {
+      case 'Array':
+        value = value.join(' ');
+        break;
+      case 'Object':
+        value = Object.keys(value)
+          .reduce((a, k) => {
+            if (value[k]) a.push(k);
+            return a;
+          }, [])
+          .join(' ');
+        break;
     }
-    case 'class': {
-      switch (typeOf(value)) {
-        case 'Array':
-          value = value.join(' ');
-          break;
-        case 'Object':
-          value = Object.keys(value)
-            .reduce((a, k) => {
-              if (value[k]) a.push(k);
-              return a;
-            }, [])
-            .join(' ');
-          break;
-      }
-      break;
-    }
-    default: {
-      if (!isPrimitive(value))
-        return (node[kebabToPascal(name)] = value);
-    }
+  } else if (!isPrimitive(value)) {
+    return (node[kebabToPascal(name)] = value);
   }
 
   applyAttribute(node, name, value);
