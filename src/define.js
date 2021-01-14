@@ -86,11 +86,10 @@ const define = (name, factory, template, options = {}) => {
 
       this.viewmodel.updatedCallback = (prev) => {
         observedProps.forEach((k) => {
-          let p = prev[k];
           let v = this.viewmodel[k];
           return (
             isPrimitive(v) &&
-            p !== v &&
+            prev[k] !== v &&
             applyAttribute(this, k, v)
           );
         });
