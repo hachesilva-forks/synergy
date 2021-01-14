@@ -53,10 +53,10 @@ const define = (name, factory, template, options = {}) => {
         if (!value && value !== '') value = this[property]; // || false?
 
         Object.defineProperty(this, property, {
-          get: () => {
+          get() {
             return this.viewmodel[property];
           },
-          set: (v) => {
+          set(v) {
             this.viewmodel[property] = v;
             if (isPrimitive(v))
               applyAttribute(this, property, v);
