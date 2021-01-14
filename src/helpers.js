@@ -96,7 +96,6 @@ export const debounce = (fn) => {
 };
 
 export const pascalToKebab = (string) => {
-  console.log(string);
   return string.replace(/[\w]([A-Z])/g, function (m) {
     return m[0] + '-' + m[1].toLowerCase();
   });

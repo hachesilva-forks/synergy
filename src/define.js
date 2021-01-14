@@ -49,8 +49,11 @@ const define = (name, factory, template, options = {}) => {
       observedAttributes.forEach((name) => {
         let property = attributeToProp(name).name;
 
-        let value =
-          this.getAttribute(name) || this[property]; // || false?
+        //@TODO
+
+        let value = this.getAttribute(name);
+
+        if (!value && value !== '') value = this[property]; // || false?
 
         Object.defineProperty(this, property, {
           get: () => {
@@ -88,13 +91,12 @@ const define = (name, factory, template, options = {}) => {
         this.viewmodel.updatedCallback || function () {};
 
       this.viewmodel.updatedCallback = (prev) => {
-        console.log('updatedCallback');
         observedProps
           .map((k) => {
             return [k, prev[k], this.viewmodel[k]];
           })
-          .filter(([_, a, b]) => a !== b)
           .filter(([, , b]) => isPrimitive(b))
+          .filter(([_, a, b]) => a !== b)
           .forEach(([k, _, v]) => {
             applyAttribute(this, k, v);
           });
@@ -103,7 +105,6 @@ const define = (name, factory, template, options = {}) => {
       };
     }
     attributeChangedCallback(k, _, v) {
-      console.log('attributeChangedCallback');
       let { name, value } = attributeToProp(k, v);
       this.viewmodel[name] = value;
     }

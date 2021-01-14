@@ -159,12 +159,6 @@ const applyComplexAttribute = (
     }
     default: {
       if (!isPrimitive(value)) {
-        console.log(
-          'UPDATE::L163',
-          kebabToPascal(rawName),
-          value,
-          node
-        );
         node[kebabToPascal(rawName)] = value;
         return;
       }
