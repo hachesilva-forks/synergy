@@ -124,15 +124,13 @@ const convertStyles = (o) =>
 
 const applyComplexAttribute = (
   node,
-  rawName,
+  name,
   value,
   previous
 ) => {
-  let v = value;
-
-  switch (rawName) {
+  switch (name) {
     case 'style': {
-      v = joinStyles(
+      value = joinStyles(
         mergeStyles(
           parseStyles(previous),
           parseStyles(node.getAttribute('style')),
@@ -144,10 +142,10 @@ const applyComplexAttribute = (
     case 'class': {
       switch (typeOf(value)) {
         case 'Array':
-          v = value.join(' ');
+          value = value.join(' ');
           break;
         case 'Object':
-          v = Object.keys(value)
+          value = Object.keys(value)
             .reduce((a, k) => {
               if (value[k]) a.push(k);
               return a;
@@ -159,13 +157,13 @@ const applyComplexAttribute = (
     }
     default: {
       if (!isPrimitive(value)) {
-        node[kebabToPascal(rawName)] = value;
+        node[kebabToPascal(name)] = value;
         return;
       }
     }
   }
 
-  applyAttribute(node, rawName, v);
+  applyAttribute(node, name, value);
 };
 
 const updateNode = (node, binding, newValue, oldValue) =>
