@@ -156,17 +156,15 @@ const applyComplexAttribute = (
       break;
     }
     default: {
-      if (!isPrimitive(value)) {
-        node[kebabToPascal(name)] = value;
-        return;
-      }
+      if (!isPrimitive(value))
+        return (node[kebabToPascal(name)] = value);
     }
   }
 
   applyAttribute(node, name, value);
 };
 
-const updateNode = (node, binding, newValue, oldValue) =>
+const updateNode = (node, binding, newValue) =>
   binding.type === ATTRIBUTE
     ? applyComplexAttribute(
         node,
@@ -269,7 +267,7 @@ const updateBinding = (binding, node, ctx, p) => {
 
   binding.data = newValue;
 
-  updateNode(node, binding, newValue, oldValue);
+  updateNode(node, binding, newValue);
 };
 
 let prev;
