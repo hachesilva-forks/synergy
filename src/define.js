@@ -48,9 +48,10 @@ const define = (name, factory, template, options = {}) => {
 
       observedAttributes.forEach((name) => {
         let property = attributeToProp(name).name;
-        let value = this.getAttribute(name);
 
-        if (!value && value !== '') value = this[property];
+        let value = this.hasAttribute(name)
+          ? this.getAttribute(name)
+          : this[property];
 
         Object.defineProperty(this, property, {
           get() {
@@ -58,7 +59,7 @@ const define = (name, factory, template, options = {}) => {
           },
           set(v) {
             this.viewmodel[property] = v;
-            if (isPrimitive(v))
+            isPrimitive(v) &&
               applyAttribute(this, property, v);
           },
         });
@@ -87,11 +88,7 @@ const define = (name, factory, template, options = {}) => {
       this.viewmodel.updatedCallback = (prev) => {
         observedProps.forEach((k) => {
           let v = this.viewmodel[k];
-          return (
-            isPrimitive(v) &&
-            prev[k] !== v &&
-            applyAttribute(this, k, v)
-          );
+          isPrimitive(v) && applyAttribute(this, k, v);
         });
 
         puc.call(this.viewmodel, prev);
@@ -106,7 +103,7 @@ const define = (name, factory, template, options = {}) => {
   forwards.forEach((k) =>
     Object.assign(X.prototype, {
       [k]() {
-        if (this.viewmodel[k]) this.viewmodel[k]();
+        this.viewmodel[k] && this.viewmodel[k]();
       },
     })
   );
