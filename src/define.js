@@ -88,15 +88,15 @@ const define = (name, factory, template, options = {}) => {
         this.viewmodel.updatedCallback || function () {};
 
       this.viewmodel.updatedCallback = (prev) => {
-        observedProps
-          .map((k) => {
-            return [k, prev[k], this.viewmodel[k]];
-          })
-          .filter(([, , b]) => isPrimitive(b))
-          .filter(([_, a, b]) => a !== b)
-          .forEach(([k, _, v]) => {
-            applyAttribute(this, k, v);
-          });
+        observedProps.forEach((k) => {
+          let p = prev[k];
+          let v = this.viewmodel[k];
+          return (
+            isPrimitive(v) &&
+            p !== v &&
+            applyAttribute(this, k, v)
+          );
+        });
 
         puc.call(this.viewmodel, prev);
       };
