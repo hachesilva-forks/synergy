@@ -223,21 +223,21 @@ describe('define', () => {
   });
 
   it('should accept rich data as properties', () => {
-    let factory = ({ arr = [], obj = {} }) => ({
-      arr,
+    let factory = ({ letters = [], obj = {} }) => ({
+      letters,
       obj,
     });
 
     let template = `
     <h2>{{ obj.org }}</h2>  
     <h3>{{ obj.repo }}</h3>
-      <template each="letter in arr">
+      <template each="letter in letters">
         <p>{{ letter }}</p>
       </template>
     `;
 
     synergy.define('rich-props', factory, template, {
-      observedAttributes: ['arr', 'obj'],
+      observedAttributes: ['letters', 'obj'],
     });
 
     mount(html` <div id="container"></div> `);
@@ -245,7 +245,7 @@ describe('define', () => {
     synergy.render(
       document.getElementById('container'),
       {
-        items: 'synergy'.split(''),
+        letters: 'synergy'.split(''),
         library: {
           org: 'synergyjs',
           repo: 'defx/synergy',
@@ -253,38 +253,10 @@ describe('define', () => {
       },
       html`
         <rich-props
-          arr="{{ items }}"
+          letters="{{ letters }}"
           obj="{{ library }}"
         ></rich-props>
       `
     );
   });
-
-  // it('should pass rich data as properties', () => {
-  //   let factory = () => {
-  //     return {
-  //       bool: true,
-  //       num: 7,
-  //       str: 'synergy',
-  //       array: 'synergy'.split(''),
-  //       obj: {
-  //         org: 'synergyjs',
-  //         repo: 'defx/synergy',
-  //       },
-  //     };
-  //   };
-
-  //   let template = `
-  //   <ce-with-properties
-  //     id="wc"
-  //     bool="{{ bool }}"
-  //     num="{{ num }}"
-  //     str="{{ str }}"
-  //     .arr="{{ arr }}"
-  //     .obj="{{ obj }}"
-  //   ></ce-with-properties>
-  //   `;
-
-  //   define('rich-props', factory, template);
-  // });
 });
