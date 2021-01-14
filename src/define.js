@@ -21,6 +21,9 @@ const forwards = [
   'adoptedCallback',
 ];
 
+const isPrimitive = (v) =>
+  v === null || typeof v !== 'object';
+
 const define = (name, factory, template, options = {}) => {
   let { observedAttributes = [] } = options;
 
@@ -44,6 +47,29 @@ const define = (name, factory, template, options = {}) => {
         initialAttributes(this),
         this
       );
+
+      // observedAttributes.forEach((name) => {
+      //   let property = attributeToProp(name).name;
+
+      //   let value =
+      //     this.getAttribute(name) || this[property]; // || false?
+
+      //   Object.defineProperty(this, property, {
+      //     get: (k) => {
+      //       return this.viewmodel[k];
+      //     },
+      //     set: (k, v) => {
+      //       console.log('?', this.viewmodel);
+      //       this.viewmodel[k] = v;
+      //       if (isPrimitive(v)) applyAttribute(this, k, v);
+      //       /*
+      //       @TODO: combine prop/attribute set into single function (also happens in the updateCallback wrapper below)
+      //       */
+      //     },
+      //   });
+
+      //   this[property] = value;
+      // });
 
       if (options.shadowRoot) {
         this.attachShadow({

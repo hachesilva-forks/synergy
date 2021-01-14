@@ -221,4 +221,69 @@ describe('define', () => {
     assert.ok(node.shadowRoot);
     assert.equal(node.shadowRoot.innerHTML, template);
   });
+
+  xit('should accept rich data as properties', () => {
+    let factory = () => {
+      return {
+        bool: true,
+        num: 7,
+        str: 'synergy',
+        array: 'synergy'.split(''),
+        obj: {
+          org: 'synergyjs',
+          repo: 'defx/synergy',
+        },
+      };
+    };
+
+    let template = `
+      <div id="bool">{{ bool }}</div>
+    `;
+
+    /*
+    
+    first thoughts...
+    
+    - make observed attributes getters on the class
+    - check props when initialising
+
+
+
+
+    dont really care if this gets used for primitives too.
+    
+    */
+
+    define('rich-props', factory, template, {
+      observedAttributes: ['array', 'obj'],
+    });
+  });
+
+  // it('should pass rich data as properties', () => {
+  //   let factory = () => {
+  //     return {
+  //       bool: true,
+  //       num: 7,
+  //       str: 'synergy',
+  //       array: 'synergy'.split(''),
+  //       obj: {
+  //         org: 'synergyjs',
+  //         repo: 'defx/synergy',
+  //       },
+  //     };
+  //   };
+
+  //   let template = `
+  //   <ce-with-properties
+  //     id="wc"
+  //     bool="{{ bool }}"
+  //     num="{{ num }}"
+  //     str="{{ str }}"
+  //     .arr="{{ arr }}"
+  //     .obj="{{ obj }}"
+  //   ></ce-with-properties>
+  //   `;
+
+  //   define('rich-props', factory, template);
+  // });
 });
